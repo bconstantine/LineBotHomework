@@ -1,0 +1,13 @@
+# Folder
+__pycache__
+PowerPoint
+AWS
+FastAPI/fastapi-tutorial
+Certs
+.DS_Store
+# File
+*.json
+*.pem
+*.ppk
+bot.py
+.env
