@@ -10,4 +10,4 @@ Certs
 *.pem
 *.ppk
 bot.py
-*.env
+.env
