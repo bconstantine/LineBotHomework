@@ -1,8 +1,8 @@
 '''
 This is my LineBot API
 How to Start:
-    > Step 0. Go to ./MVCLab-Summer-Course/LineBot/
-        > cd ./MVCLab-Summer-Course/LineBot
+    > Step 0. Go to ./Line
+        > cd ./MVCLab-Summer-Course/LineBotHomework
     > Step 1. Install Python Packages
         > pip install -r requirements.txt
     > Step 2. Run main.py
@@ -10,7 +10,7 @@ How to Start:
 Reference:
 1. LineBot API for Python
     > https://github.com/line/line-bot-sdk-python
-2. Pokemon's reference
+2. Random 
     > https://pokemondb.net/pokedex/all
 3. Line Developer Messaging API Doc
     > https://developers.line.biz/en/docs/messaging-api/
