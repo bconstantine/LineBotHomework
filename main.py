@@ -35,6 +35,7 @@ class DB():
     def __init__(self, ip, port, user, password, db_name):
         """db_name is measurement"""
         self.client = InfluxDBClient(ip, port, user, password, db_name)
+        self.client.create_database("db_name") #to handle error: accounting_db database doesnt exist
         print('Influx DB Init successful')
 
     def insertData(self, data):
@@ -308,7 +309,7 @@ def handle_textmessage(event):
             #delete
             user_id = event.source.user_id
             deleteEvent = recieve_message[1]
-            query_str = f"""
+            query_str = f""" 
             delete from accounting_items where user = {user_id} AND event = \"{deleteEvent}\"
             """
             
