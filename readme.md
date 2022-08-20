@@ -13,6 +13,7 @@
     * **Start ngrok https server (default port:8787)**
         * > ngrok http 8787
         * > http://127.0.0.1:4040
+    * **Change .env.sample filename to .env, and fill the required data**
     * **Step 2: Run main.py by uvicorn (default localhost:8787)**
         * > python main.py
 ### Supported Operation: Calculator
