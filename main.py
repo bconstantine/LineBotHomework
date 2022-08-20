@@ -25,8 +25,6 @@ from pyquery import PyQuery
 from fastapi import FastAPI, Request, HTTPException
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import *
-from influxdb import InfluxDBClient
 
 """
 init DB Class
@@ -35,7 +33,7 @@ class DB():
     def __init__(self, ip, port, user, password, db_name):
         """db_name is measurement"""
         self.client = InfluxDBClient(ip, port, user, password, db_name)
-        self.client.create_database("db_name") #to handle error: accounting_db database doesnt exist
+        self.client.create_database(db_name) #to handle error: accounting_db database doesnt exist
         print('Influx DB Init successful')
 
     def insertData(self, data):
@@ -52,16 +50,6 @@ class DB():
             return False
 
     def queryData(self, query):
-        """
-        [query] should be a SQL like query string
-        """
-        return self.client.query(query)
-    def deleteData(self, query):
-        """
-        [query] should be a SQL like query string
-        """
-        return self.client.query(query, method="POST")
-    def sumData(self, query):
         """
         [query] should be a SQL like query string
         """
@@ -289,29 +277,42 @@ def handle_textmessage(event):
             query_str = """
             select * from accounting_items 
             """
-            result = db.queryData(query_str)
-            points = result.get_points(tags={'user': str(user_id)})
-            
-            reply_text = ''
-            for i, point in enumerate(points):
-                time = point['time']
-                event_ = point['event']
-                money = point['money']
-                reply_text += f'[{i}] -> [{time}] : {event_}   {money}\n'
+            try:
+                result = db.queryData(query_str)
+                points = result.get_points(tags={'user': str(user_id)})
+            except:
+                My_LineBotAPI.reply_message(
+                    event.reply_token,
+                    TextSendMessage(
+                        text="Database error! Perhaps database is empty?")
+                )
+            else:
+                reply_text = ''
+                for i, point in enumerate(points):
+                    time = point['time']
+                    event_ = point['event']
+                    money = point['money']
+                    reply_text += f'[{i}] -> [{time}] : {event_}   {money}\n'
 
+                My_LineBotAPI.reply_message(
+                    event.reply_token,
+                    TextSendMessage(
+                        text=reply_text)
+                )
+        elif case_ == my_event[7]:
+            #delete
+            user_id = str(event.source.user_id)
+            deleteEvent = recieve_message[1]
+            db.queryData(f"SELECT * INTO temporary FROM accounting_items WHERE \"event\"!=\'{deleteEvent}\'")
+            db.queryData("DROP measurement accounting_items")
+            result =db.queryData("SELECT * INTO accounting_items FROM temporary")
+            db.queryData("DROP measurement temporary")
             My_LineBotAPI.reply_message(
                 event.reply_token,
                 TextSendMessage(
-                    text=reply_text
+                    text=f"Deleted {deleteEvent}!"
                 )
             )
-        elif case_ == my_event[7]:
-            #delete
-            user_id = event.source.user_id
-            deleteEvent = recieve_message[1]
-            query_str = f""" 
-            delete from accounting_items where user = {user_id} AND event = \"{deleteEvent}\"
-            """
             
         elif case_ == my_event[8]:
             #sum
@@ -322,7 +323,7 @@ def handle_textmessage(event):
             query_str += recieve_message[1]
             result = db.queryData(query_str)
             points = result.get_points(tags={'user': str(user_id)})
-            
+
             totalSum = 0
             for i, point in enumerate(points):
                 totalSum += point['money']
@@ -343,20 +344,16 @@ def handle_textmessage(event):
                                     text=f'{_quotes[index]}\n\nby: {_author[index]}')
                     )
         else:
-            print("enter3") #for debug purposes
             #calculator mode
             case_ = recieve_message[1].lower().strip()
             # Case 1: add
             if my_event[0] == case_:
-                print("enter4") #for debug purposes
                 num1 = None
                 num2 = None
                 try:
-                    print("enter5") #for debug purposes
                     num1 = float(recieve_message[0].lower().strip())
                     num2 = float(recieve_message[2].lower().strip())
                 except ValueError:
-                    print("enter6") #for debug purposes
                     My_LineBotAPI.reply_message(
                         event.reply_token,
                         TextSendMessage(
@@ -370,9 +367,7 @@ def handle_textmessage(event):
                         ])
                     )
                 else:
-                    print("enter7") #for debug purposes
                     num1 += num2
-                    print(f"enter8: {num1}")
                     My_LineBotAPI.reply_message(
                         event.reply_token,
                         TextSendMessage(
