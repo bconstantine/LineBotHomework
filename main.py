@@ -185,7 +185,9 @@ def handle_textmessage(event):
     #verify input format
     formatVerified = False
     if len(recieve_message) == 3:
+        print("enter1") #for debug purposes
         if recieve_message[1] in my_event:
+            print("enter2") #for debug purposes
             formatVerified = True
     elif len(recieve_message) == 4 and case_ == "#note":
         formatVerified = True
@@ -332,16 +334,20 @@ def handle_textmessage(event):
                 )
             )
         else:
+            print("enter3") #for debug purposes
             #calculator mode
             case_ = recieve_message[1].lower().strip()
             # Case 1: add
             if re.match(my_event[0], case_):
+                print("enter4") #for debug purposes
                 num1 = None
                 num2 = None
                 try:
+                    print("enter5") #for debug purposes
                     num1 = float(recieve_message[0].lower().strip())
                     num2 = float(recieve_message[2].lower().strip())
                 except ValueError:
+                    print("enter6") #for debug purposes
                     My_LineBotAPI.reply_message(
                         event.reply_token,
                         TextSendMessage(
@@ -355,7 +361,9 @@ def handle_textmessage(event):
                         ])
                     )
                 else:
+                    print("enter7") #for debug purposes
                     num1 += num2
+                    print(f"enter8: {num1}")
                     My_LineBotAPI.reply_message(
                         event.reply_token,
                         TextSendMessage(
