@@ -115,7 +115,7 @@ CHANNEL_ID = os.getenv('LINE_UID') # For any message pushing to or pulling from 
 # My_LineBotAPI.push_message(CHANNEL_ID, TextSendMessage(text='Welcome to my pokedex !')) # Push a testing message
 
 # Events for message reply
-my_event = ['+', '-', '*', '/', '#help', '#note', '#report', '#delete', '#sum']
+my_event = ['+', '-', '*', '/', '#help', '#note', '#report', '#delete', '#sum', '#quote']
 """format of note, query, delete and sum: 
 note: #note <event> 
 report: #report <event> [+/-] <amount>
@@ -185,9 +185,7 @@ def handle_textmessage(event):
     #verify input format
     formatVerified = False
     if len(recieve_message) == 3:
-        print("enter1") #for debug purposes
         if recieve_message[1] in my_event:
-            print("enter2") #for debug purposes
             formatVerified = True
     elif len(recieve_message) == 4 and case_ == "#note":
         formatVerified = True
@@ -196,7 +194,7 @@ def handle_textmessage(event):
             formatVerified = True
         elif case_ == "#sum" and recieve_message[1][-1] in supported_intervals: 
             formatVerified = True
-    elif len(recieve_message) == 1 and case_ in ["#help", '#report']:
+    elif len(recieve_message) == 1 and case_ in ["#help", '#report', '#quote']:
         formatVerified = True
 
     if(formatVerified):
@@ -207,7 +205,8 @@ def handle_textmessage(event):
             <decimal> - <decimal>\n\t-->Show the result of the subtraction\n\
             <decimal> * <decimal>\n\t-->Show the result of the multiplication\n\
             <decimal> / <decimal>\n\t-->Show the result of the division\n\
-            or send me any sticker to get a motivational quote about studying!\n\n\n\
+            #quote\n\t-->get one random quote about studying\n\
+            or send me any sticker to get a sticker reply!\n\n\n\
             Additionally, I can also help you record your expenses and income report! Use the following command:\n\
             note: #note <event> [+/-] <amount>\n\t-->record your expenses(-) or income(+) amount in current event\n\
             report: #report\n\t-->Show all of your recorded income and expenses\n\
@@ -333,6 +332,15 @@ def handle_textmessage(event):
                     text=f"Your {recieve_message} prior money amount: {totalSum}"
                 )
             )
+        elif case_ == my_event[9]:
+            #get random quote
+            #reply with quote
+            index = random.randrange(min(len(_quotes), len(_author)))
+            My_LineBotAPI.reply_message(
+                                event.reply_token,
+                                TextSendMessage(
+                                    text=f'{_quotes[index]}\n\nby: {_author[index]}')
+                    )
         else:
             print("enter3") #for debug purposes
             #calculator mode
@@ -500,18 +508,6 @@ my_sticker = [My_Sticker(p_id='446', s_id='1995'), My_Sticker(p_id='446', s_id='
 # Line Sticker Event
 @handler.add(MessageEvent, message=StickerMessage)
 def handle_sticker(event):
-    #first, reply with quote
-    index = random.randrange(min(len(_quotes), len(_author)))
-    My_LineBotAPI.reply_message(
-                        event.reply_token,
-                        TextSendMessage(
-                            text=f'This is your quote!')
-                    )
-    My_LineBotAPI.reply_message(
-                        event.reply_token,
-                        TextSendMessage(
-                            text=f'{_quotes[index]}\n\nby: {_author[index]}')
-                    )
     # Random choice a sticker from my_sticker list
     ran_sticker = random.choice(my_sticker)
     # Reply Sticker Message
