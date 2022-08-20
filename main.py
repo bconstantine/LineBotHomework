@@ -25,6 +25,8 @@ from pyquery import PyQuery
 from fastapi import FastAPI, Request, HTTPException
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
+from linebot.models import *
+from influxdb import InfluxDBClient
 
 """
 init DB Class
@@ -254,8 +256,8 @@ def handle_textmessage(event):
                     {
                         "measurement" : "accounting_items",
                         "tags": {
-                            "user": str(user_id),
-                            # "category" : "food"
+                            "ev": str(event_),
+                            "user": str(user_id)
                         },
                         "fields":{
                             "event": str(event_),
@@ -303,10 +305,7 @@ def handle_textmessage(event):
             #delete
             user_id = str(event.source.user_id)
             deleteEvent = recieve_message[1]
-            db.queryData(f"SELECT * INTO temporary FROM accounting_items WHERE \"event\"!=\'{deleteEvent}\'")
-            db.queryData("DROP measurement accounting_items")
-            result =db.queryData("SELECT * INTO accounting_items FROM temporary")
-            db.queryData("DROP measurement temporary")
+            db.client.query(f"DELETE FROM accounting_items WHERE ev = \'{deleteEvent}\'", method = 'POST')
             My_LineBotAPI.reply_message(
                 event.reply_token,
                 TextSendMessage(
@@ -471,7 +470,7 @@ def handle_textmessage(event):
         My_LineBotAPI.reply_message(
             event.reply_token,
             TextSendMessage(
-                text='$ Welcome to Calculator ! Enter "#help" for commands !',
+                text='$ Welcome to Calculator + Database ! Your command is unrecognized! Enter "#help" for commands !',
                 emojis=[
                     {
                         'index':0,
