@@ -201,7 +201,7 @@ def handle_textmessage(event):
 
     if(formatVerified):
         # Help command for listing all commands to user
-        if re.match(my_event[4], case_):
+        if my_event[4] == case_:
             command_describtion = '$ Commands:\n\
             <decimal> + <decimal>\n\t-->Show the result of the addition\n\
             <decimal> - <decimal>\n\t-->Show the result of the subtraction\n\
@@ -235,7 +235,7 @@ def handle_textmessage(event):
                     ]
                 )
             )
-        elif re.match(my_event[5], case_):
+        elif my_event[5] == case_:
             event_ = recieve_message[1]
             op = recieve_message[2]
             money = None
@@ -283,7 +283,7 @@ def handle_textmessage(event):
                             text="Write to DB Successfully!"
                         )
                     )
-        elif re.match(my_event[6], case_):
+        elif my_event[6] == case_:
             #report
             user_id = event.source.user_id
             query_str = """
@@ -305,7 +305,7 @@ def handle_textmessage(event):
                     text=reply_text
                 )
             )
-        elif re.match(case_, my_event[7]):
+        elif case_ == my_event[7]:
             #delete
             user_id = event.source.user_id
             deleteEvent = recieve_message[1]
@@ -313,7 +313,7 @@ def handle_textmessage(event):
             delete from accounting_items where user = {user_id} AND event = \"{deleteEvent}\"
             """
             
-        elif re.match(case_, my_event[8]):
+        elif case_ == my_event[8]:
             #sum
             # get user id
             user_id = event.source.user_id
@@ -338,7 +338,7 @@ def handle_textmessage(event):
             #calculator mode
             case_ = recieve_message[1].lower().strip()
             # Case 1: add
-            if re.match(my_event[0], case_):
+            if my_event[0] == case_:
                 print("enter4") #for debug purposes
                 num1 = None
                 num2 = None
@@ -370,7 +370,7 @@ def handle_textmessage(event):
                             text=f'Result: {num1}')
                     )
             # Case 2: subtract
-            elif re.match(my_event[1], case_):
+            elif my_event[1] == case_:
                 num1 = None
                 num2 = None
                 try:
@@ -397,7 +397,7 @@ def handle_textmessage(event):
                             text=f'Result: {num1}')
                     )
             # Case 3: multiply
-            elif re.match(my_event[2], case_):
+            elif my_event[2] == case_:
                 num1 = None
                 num2 = None
                 try:
@@ -424,7 +424,7 @@ def handle_textmessage(event):
                             text=f'Result: {num1}')
                     )
             # Case 4: divide
-            elif re.match(my_event[3], case_):
+            elif my_event[3] == case_:
                 num1 = None
                 num2 = None
                 try:
