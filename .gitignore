@@ -11,3 +11,4 @@ Certs
 *.ppk
 bot.py
 .env
+*.env

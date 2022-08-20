@@ -4,3 +4,4 @@ uvicorn
 typing
 python-dotenv
 pyquery
+influxdb
